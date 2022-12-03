@@ -2,6 +2,7 @@ import pytest
 from brownie import (
     ZERO_ADDRESS,
     Jumpgate,
+    JumpgatePolygon,
     Destrudo,
     accounts,
     MockERC20,
@@ -22,6 +23,8 @@ from utils.config import (
     TETHER,
     TOP_UP_REWARD_PROGRAM_EVM_SCRIPT_FACTORY,
     WORMHOLE_TOKEN_BRIDGE_ADDRESS,
+    POLYGON_BRIDGE_ADDRESS,
+    POLYGON_BRIDGE_LDO_PREDICATE_ADDRESS,
 )
 from utils.contract import (
     init_add_reward_program_evm_script_factory,
@@ -30,6 +33,7 @@ from utils.contract import (
     init_reward_programs_registry,
     init_tether,
     init_top_up_reward_program_evm_script_factory,
+    init_polygon_bridge_ldo_predicate,
 )
 from utils.encode import encode_solana_address
 
@@ -301,3 +305,22 @@ def tether_holder(tether, accounts, tether_holder_balance):
     holder = accounts.add()
     tether.transfer(holder.address, tether_holder_balance, {"from": tether_owner})
     return holder
+
+
+@pytest.fixture(scope="function")
+def jumpgate_polygon(owner, ldo, polygon_bridge, stranger):
+    return JumpgatePolygon.deploy(
+        owner.address,
+        ldo.address,
+        polygon_bridge.address,
+        stranger.address,
+        {"from": owner},
+    )
+
+@pytest.fixture
+def polygon_bridge(interface, chain):
+    return interface.IPolygonBridge(POLYGON_BRIDGE_ADDRESS.get(chain.id))
+
+@pytest.fixture
+def polygon_bridge_ldo_predicate(chain):
+    return init_polygon_bridge_ldo_predicate(POLYGON_BRIDGE_LDO_PREDICATE_ADDRESS.get(chain.id))

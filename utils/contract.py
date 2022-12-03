@@ -56,3 +56,6 @@ def init_top_up_reward_program_evm_script_factory(address):
 
 def init_tether(address):
     return init_contract(address, interface.Tether)
+
+def init_polygon_bridge_ldo_predicate(address):
+    return init_contract(address, interface.PolygonBridgeLDOPredicate)
